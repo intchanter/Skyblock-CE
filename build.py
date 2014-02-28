@@ -17,6 +17,10 @@ def main():
     clear_chunks(level, radius = 12)
     dirt_island(level)
     sand_island(level)
+    soul_sand_island(level)
+    bedrock_island(level)
+    obsidian_island(level)
+    portal_island(level)
     level.generateLights()
     level.saveInPlace()
 
@@ -28,6 +32,7 @@ def clear_chunks(level, radius = 0):
             chunk.chunkChanged()
 
 def dirt_island(level):
+    # Main
     chunk = level.getChunk(0, 0)
 
     # Dirt
@@ -53,6 +58,7 @@ def dirt_island(level):
 
 
 def sand_island(level):
+    # Main
     chunk = level.getChunk(-4, 0)
 
     # Sand
@@ -70,6 +76,33 @@ def sand_island(level):
     chest_inventory = level.tileEntityAt(7, 1, 64)
 
     chunk.chunkChanged()
+
+def soul_sand_island(level):
+    # Nether
+    pass
+
+def bedrock_island(level):
+    # Main
+    chunk = level.getChunk(7, 2)
+
+    # Bedrock
+    bedrock_id = level.materials.Bedrock.ID
+    chunk.Blocks[0:8, 0:8, 0:8] = bedrock_id
+
+    # Air core
+    air_id = level.materials.Air.ID
+    chunk.Blocks[1:7, 1:7, 1:7] = air_id
+    chunk.Blocks[:, :, 5] = air_id
+
+    chunk.chunkChanged()
+
+def obsidian_island(level):
+    # End
+    pass
+
+def portal_island(level):
+    # End
+    pass
 
 if __name__ == '__main__':
     main()
