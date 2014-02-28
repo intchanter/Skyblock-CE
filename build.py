@@ -59,6 +59,10 @@ def sand_island(level):
     sand_id = level.materials.Sand.ID
     chunk.Blocks[0:4, 0:4, 60:64] = sand_id
 
+    # Cactus
+    cactus_id = level.materials.Cactus.ID
+    chunk.Blocks[0, 3, 64] = cactus_id
+
     # Chest
     chest_id = level.materials.Chest.ID
     chunk.Blocks[7, 1, 64] = chest_id
