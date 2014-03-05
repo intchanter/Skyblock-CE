@@ -6,10 +6,10 @@ A community-maintained version of the famous Skyblock map by Noobcrew
 Prerequisites
 =============
 
-Python 2.7
-virtualenv
-virtualenvwrapper (optional, but recommended)
--dev or -devel packages as required by the packages in requirements.txt
+* Python 2.7
+* virtualenv
+* virtualenvwrapper (optional, but recommended)
+* -dev or -devel packages as required by the packages in requirements.txt
 
 Getting Started
 ===============
