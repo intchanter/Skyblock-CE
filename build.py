@@ -8,7 +8,7 @@ from pymclevel import TAG_List
 from pymclevel import TAG_Short
 from pymclevel import TAG_Byte
 from pymclevel import TAG_String
-#from pymclevel.items.items import 
+from pymclevel.items import items
 
 # So we can use relative figures and shift them all around slightly
 base = 4
@@ -59,11 +59,14 @@ def make_chest(level, chunk, pos, contents):
     chunk.Blocks[x, z, y] = chest_id
     chest_facing_west = 4
     chunk.Data[x, z, y] = chest_facing_west
-    #chest = TileEntity.Create('Chest')
-    #TileEntity.setpos(chest, (x, z, y))
-    #for item in contents:
-    #    chest['Items'].append(item_stack(item))
-    #print(chest['Items'])
+    chest = TileEntity.Create('Chest')
+    TileEntity.setpos(chest, (x + 0.5, y + 0.5, z + 0.5))
+    slot = 0
+    for item in contents:
+        item['slot'] = slot
+        chest['Items'].append(item_stack(item))
+        slot += 1
+    print(chest['Items'])
     # TODO: The following line crashes the client.  Find out why!
     # It appears to be triggered by the one in the bedrock island.
     # Possibility: the TileEntity is falling out of the world?
@@ -76,7 +79,7 @@ def make_chest(level, chunk, pos, contents):
     # Unless I add block entities or other entities manually.
     # The error message seems to refer to there being a negative
     # distance to some entity.  How is that even possible?
-    #chunk.TileEntities.append(chest)
+    chunk.TileEntities.append(chest)
 
 def create_empty_chunks(level, radius=0):
     for chunkX in range(-radius, radius + 1):
@@ -123,17 +126,26 @@ def dirt_island(level, chunkX, chunkZ):
 
     # Chest
     contents = [
-            #{'id': level.materials.Ice.ID,
-            {'id': 79,
-                'count': 1, 'damage': 0, 'slot': 0},
-            #{'id': level.materials.LavaBucket.ID,
-                #'count': 1, 'damage': 0, 'slot': 0},
+            {'id': items.names['Ice'],
+                'count': 1, 'damage': 0},
+            {'id': items.names['Lava Bucket'],
+                'count': 1, 'damage': 0},
+            {'id': items.names['Cobblestone'],
+                'count': 64, 'damage': 0},
+            {'id': items.names['Cobblestone'],
+                'count': 64, 'damage': 0},
+            {'id': items.names['Cobblestone'],
+                'count': 64, 'damage': 0},
+            {'id': items.names['Cobblestone'],
+                'count': 64, 'damage': 0},
+            {'id': items.names['Eye of Ender'],
+                'count': 64, 'damage': 0},
             ]
     make_chest(level, chunk, (base+7, base+2, 64), contents)
 
-def sand_island(level, chunkX, chunkY):
+def sand_island(level, chunkX, chunkZ):
     # Main
-    chunk = level.getChunk(chunkX, chunkY)
+    chunk = level.getChunk(chunkX, chunkZ)
 
     # Sand
     sand_id = level.materials.Sand.ID
@@ -144,8 +156,20 @@ def sand_island(level, chunkX, chunkY):
     chunk.Blocks[base, base+3, 64] = cactus_id
 
     # Chest
-    contents = []
-    make_chest(level, chunk, (base+2, base+2, 64), contents)
+    contents = [
+            {'id': items.names['Obsidian'],
+                'count': 10, 'damage': 0},
+            # The melon slice item can't be referenced due to a name conflict
+            # TODO: I submitted a patch to pymclevel's items.py for this.
+            # Once it goes in, use the following line instead.
+            #{'id': items.names['Melon Slice'],
+            {'id': items.names['Melon'],
+                'count': 1, 'damage': 0},
+            ]
+    # Entities need the world-wide coordinates?!
+    chunkX = 16 * chunkX
+    chunkZ = 16 * chunkZ
+    make_chest(level, chunk, (chunkX+base+2, chunkZ+base+2, 64), contents)
 
     chunk.chunkChanged()
 
@@ -169,7 +193,7 @@ def soul_sand_island(level, chunkX, chunkZ):
 
     # Chest
     contents = []
-    make_chest(level, chunk, (base+2, base+2, 64), contents)
+    #make_chest(level, chunk, (base+2, base+2, 64), contents)
 
     # Mushrooms and Netherwart
     red_mushroom_id = level.materials.RedMushroom.ID
@@ -186,12 +210,15 @@ def bedrock_island(level, chunkX, chunkZ):
 
     # Bedrock
     bedrock_id = level.materials.Bedrock.ID
-    chunk.Blocks[base:base+8, base:base+8, base:base+8] = bedrock_id
+    #chunk.Blocks[base:base+8, base:base+8, :8] = bedrock_id
+    chunk.Blocks[base:base+8, base:base+8, :6] = bedrock_id
 
-    # Air core
+    # Air core (and water break for testing)
     air_id = level.materials.Air.ID
+    water_id = level.materials.Water.ID
     chunk.Blocks[base+1:base+7, base+1:base+7, 1:7] = air_id
-    chunk.Blocks[:, :, 5] = air_id
+    #chunk.Blocks[:, :, 5] = air_id
+    chunk.Blocks[:, :, 5] = water_id
 
     # End portal frame
     frame_id = level.materials.PortalFrame.ID
@@ -201,7 +228,7 @@ def bedrock_island(level, chunkX, chunkZ):
 
     # Chest
     contents = []
-    make_chest(level, chunk, (base+3, base+3, 1), contents)
+    #make_chest(level, chunk, (base+3, base+3, 1), contents)
 
     chunk.chunkChanged()
 
