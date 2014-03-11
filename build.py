@@ -17,7 +17,9 @@ base = 4
 def main():
     # Set random_seed explicitly just to avoid randomness
     level = MCInfdevOldLevel(settings.output_filename, create=True, random_seed=1)
-    #level = MCInfdevOldLevel(settings.output_filename)
+    # TODO: The following line is for testing only.  Be sure it's
+    # commented out before releasing!
+    level.GameType = level.GAMETYPE_CREATIVE
 
     # Place the player
     px, py, pz = (6, 64, 6)
@@ -130,16 +132,6 @@ def dirt_island(level, chunkX, chunkZ):
                 'count': 1, 'damage': 0},
             {'id': items.names['Lava Bucket'],
                 'count': 1, 'damage': 0},
-            {'id': items.names['Cobblestone'],
-                'count': 64, 'damage': 0},
-            {'id': items.names['Cobblestone'],
-                'count': 64, 'damage': 0},
-            {'id': items.names['Cobblestone'],
-                'count': 64, 'damage': 0},
-            {'id': items.names['Cobblestone'],
-                'count': 64, 'damage': 0},
-            {'id': items.names['Eye of Ender'],
-                'count': 64, 'damage': 0},
             ]
     make_chest(level, chunk, (base+7, base+2, 64), contents)
 
@@ -192,8 +184,11 @@ def soul_sand_island(level, chunkX, chunkZ):
     chunk.Blocks[base-1, base+1:base+3, 64:67] = portal_id
 
     # Chest
-    contents = []
-    #make_chest(level, chunk, (base+2, base+2, 64), contents)
+    contents = [
+            {'id': items.names['Ice'],
+                'count': 1, 'damage': 0},
+            ]
+    make_chest(level, chunk, (base+2, base+2, 64), contents)
 
     # Mushrooms and Netherwart
     red_mushroom_id = level.materials.RedMushroom.ID
@@ -225,6 +220,10 @@ def bedrock_island(level, chunkX, chunkZ):
     chunk.Blocks[base+1:base+6, base+2:base+5, 1] = frame_id
     chunk.Blocks[base+2:base+5, base+1:base+6, 1] = frame_id
     chunk.Blocks[base+2:base+5, base+2:base+5, 1] = air_id
+    chunk.Data[base+2:base+5, base+1, 1] = 0
+    chunk.Data[base+5, base+2:base+5, 1] = 1
+    chunk.Data[base+2:base+5, base+5, 1] = 2
+    chunk.Data[base+1, base+2:base+5, 1] = 3
 
     # Chest
     contents = []
@@ -246,14 +245,32 @@ def portal_island(level, chunkX, chunkZ):
     # End
     chunk = level.getChunk(chunkX, chunkZ)
 
-    # Bedrock
+    # Bedrock frame
     bedrock_id = level.materials.Bedrock.ID
+    chunk.Blocks[base-2:base+3, base-1:base+2, 63] = bedrock_id
+    chunk.Blocks[base-1:base+2, base-2:base+3, 63] = bedrock_id
+    chunk.Blocks[base-1:base+2, base-3:base+4, 64] = bedrock_id
+    chunk.Blocks[base-2:base+3, base-2:base+3, 64] = bedrock_id
+    chunk.Blocks[base-3:base+4, base-1:base+2, 64] = bedrock_id
 
     # Portal
+    portal_id = level.materials.EnderPortal.ID
+    chunk.Blocks[base-2:base+3, base-1:base+2, 64] = portal_id
+    chunk.Blocks[base-1:base+2, base-2:base+3, 64] = portal_id
+
+    # Bedrock spire
+    chunk.Blocks[base, base, 63:68] = bedrock_id
 
     # Torches
+    torch_id = level.materials.Torch.ID
+    chunk.Blocks[base+0, base-1, 66], chunk.Data[base+0, base-1, 66] = (torch_id, 4)
+    chunk.Blocks[base+1, base+0, 66], chunk.Data[base+1, base+0, 66] = (torch_id, 1)
+    chunk.Blocks[base+0, base+1, 66], chunk.Data[base+0, base+1, 66] = (torch_id, 3)
+    chunk.Blocks[base-1, base+0, 66], chunk.Data[base-1, base+0, 66] = (torch_id, 2)
 
     # Dragon Egg
+    dragon_egg_id = level.materials.DragonEgg.ID
+    chunk.Blocks[base, base, 68] = dragon_egg_id
 
     chunk.chunkChanged()
 
