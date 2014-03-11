@@ -58,17 +58,16 @@ def item_stack(item):
 def make_chest(level, chunk, pos, contents):
     x, z, y = pos
     chest_id = level.materials.Chest.ID
-    chunk.Blocks[x, z, y] = chest_id
+    chunk.Blocks[x % 16, z % 16, y] = chest_id
     chest_facing_west = 4
-    chunk.Data[x, z, y] = chest_facing_west
+    chunk.Data[x % 16, z % 16, y] = chest_facing_west
     chest = TileEntity.Create('Chest')
-    TileEntity.setpos(chest, (x + 0.5, y + 0.5, z + 0.5))
+    TileEntity.setpos(chest, (x, y, z))
     slot = 0
     for item in contents:
         item['slot'] = slot
         chest['Items'].append(item_stack(item))
         slot += 1
-    print(chest['Items'])
     # TODO: The following line crashes the client.  Find out why!
     # It appears to be triggered by the one in the bedrock island.
     # Possibility: the TileEntity is falling out of the world?
@@ -188,7 +187,9 @@ def soul_sand_island(level, chunkX, chunkZ):
             {'id': items.names['Ice'],
                 'count': 1, 'damage': 0},
             ]
-    make_chest(level, chunk, (base+2, base+2, 64), contents)
+    chunkX = 16 * chunkX
+    chunkZ = 16 * chunkZ
+    make_chest(level, chunk, (chunkX+base+2, chunkZ+base+2, 64), contents)
 
     # Mushrooms and Netherwart
     red_mushroom_id = level.materials.RedMushroom.ID
@@ -226,8 +227,13 @@ def bedrock_island(level, chunkX, chunkZ):
     chunk.Data[base+1, base+2:base+5, 1] = 3
 
     # Chest
-    contents = []
-    #make_chest(level, chunk, (base+3, base+3, 1), contents)
+    contents = [
+            {'id': items.names['Ice'],
+                'count': 1, 'damage': 0},
+            ]
+    chunkX = 16 * chunkX
+    chunkZ = 16 * chunkZ
+    make_chest(level, chunk, (chunkX+base+3, chunkZ+base+3, 1), contents)
 
     chunk.chunkChanged()
 
