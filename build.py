@@ -68,18 +68,6 @@ def make_chest(level, chunk, pos, contents):
         item['slot'] = slot
         chest['Items'].append(item_stack(item))
         slot += 1
-    # TODO: The following line crashes the client.  Find out why!
-    # It appears to be triggered by the one in the bedrock island.
-    # Possibility: the TileEntity is falling out of the world?
-    # No, they don't seem able to do that.
-    # Okay, even without creating the chest in the bedrock island,
-    # I get the crash when moving to a different chunk.  Maybe
-    # it's something to do with biomes and the way I'm clearing
-    # chunks?
-    # Expanding the generated world out further avoids it for now.
-    # Unless I add block entities or other entities manually.
-    # The error message seems to refer to there being a negative
-    # distance to some entity.  How is that even possible?
     chunk.TileEntities.append(chest)
 
 def create_empty_chunks(level, radius=0):
