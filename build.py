@@ -25,11 +25,8 @@ def main():
     px, py, pz = (6, 64, 6)
     level.setPlayerPosition( (px, py + 2, pz) )
     level.setPlayerSpawnPosition( (px, py, pz) )
-    #print(dir(level.materials))
-    #print(dir(level))
 
     create_empty_chunks(level, radius=15)
-    #empty_precreated_chunks(level, radius=15)
 
     # overworld
     dirt_island(level, 0, 0)
@@ -71,20 +68,13 @@ def make_chest(level, chunk, pos, contents):
     chunk.TileEntities.append(chest)
 
 def create_empty_chunks(level, radius=0):
-    for chunkX in range(-radius, radius + 1):
-        for chunkZ in range(-radius, radius + 1):
-            level.createChunk(chunkX, chunkZ)
-            chunk = level.getChunk(chunkX, chunkZ)
-            chunk.chunkChanged()
-
-def empty_precreated_chunks(level, radius=0):
-    for chunkX, chunkZ in level.allChunks:
-        chunk = level.getChunk(chunkX, chunkZ)
-        print(chunk.Entities)
-        print(chunk.TileEntities)
-        chunk.Blocks[:, :, :] = level.materials.Air.ID
-        chunk.Data[:, :, :] = 0
-        chunk.chunkChanged()
+    dimensions = [level.getDimension(-1), level, level.getDimension(1)]
+    for dimension in dimensions:
+        for chunkX in range(-radius, radius + 1):
+            for chunkZ in range(-radius, radius + 1):
+                dimension.createChunk(chunkX, chunkZ)
+                chunk = dimension.getChunk(chunkX, chunkZ)
+                chunk.chunkChanged()
 
 def dirt_island(level, chunkX, chunkZ):
     # Main
@@ -120,7 +110,9 @@ def dirt_island(level, chunkX, chunkZ):
             {'id': items.names['Lava Bucket'],
                 'count': 1, 'damage': 0},
             ]
-    make_chest(level, chunk, (base+7, base+2, 64), contents)
+    chunkX *= 16
+    chunkZ *= 16
+    make_chest(level, chunk, (chunkX+base+7, chunkZ+base+2, 64), contents)
 
 def sand_island(level, chunkX, chunkZ):
     # Main
@@ -146,8 +138,8 @@ def sand_island(level, chunkX, chunkZ):
                 'count': 1, 'damage': 0},
             ]
     # Entities need the world-wide coordinates?!
-    chunkX = 16 * chunkX
-    chunkZ = 16 * chunkZ
+    chunkX *= 16
+    chunkZ *= 16
     make_chest(level, chunk, (chunkX+base+2, chunkZ+base+2, 64), contents)
 
     chunk.chunkChanged()
@@ -175,8 +167,8 @@ def soul_sand_island(level, chunkX, chunkZ):
             {'id': items.names['Ice'],
                 'count': 1, 'damage': 0},
             ]
-    chunkX = 16 * chunkX
-    chunkZ = 16 * chunkZ
+    chunkX *= 16
+    chunkZ *= 16
     make_chest(level, chunk, (chunkX+base+2, chunkZ+base+2, 64), contents)
 
     # Mushrooms and Netherwart
@@ -194,15 +186,13 @@ def bedrock_island(level, chunkX, chunkZ):
 
     # Bedrock
     bedrock_id = level.materials.Bedrock.ID
-    #chunk.Blocks[base:base+8, base:base+8, :8] = bedrock_id
-    chunk.Blocks[base:base+8, base:base+8, :6] = bedrock_id
+    chunk.Blocks[base:base+8, base:base+8, :8] = bedrock_id
 
-    # Air core (and water break for testing)
+    # Air core
     air_id = level.materials.Air.ID
     water_id = level.materials.Water.ID
     chunk.Blocks[base+1:base+7, base+1:base+7, 1:7] = air_id
-    #chunk.Blocks[:, :, 5] = air_id
-    chunk.Blocks[:, :, 5] = water_id
+    chunk.Blocks[:, :, 5] = air_id
 
     # End portal frame
     frame_id = level.materials.PortalFrame.ID
@@ -219,8 +209,8 @@ def bedrock_island(level, chunkX, chunkZ):
             {'id': items.names['Ice'],
                 'count': 1, 'damage': 0},
             ]
-    chunkX = 16 * chunkX
-    chunkZ = 16 * chunkZ
+    chunkX *= 16
+    chunkZ *= 16
     make_chest(level, chunk, (chunkX+base+3, chunkZ+base+3, 1), contents)
 
     chunk.chunkChanged()
