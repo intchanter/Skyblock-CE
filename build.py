@@ -32,15 +32,17 @@ def main():
 
     # overworld
     dirt_island(level, 0, 0)
-    sand_island(level, -1, 0)
+    sand_island(level, -3, 0)
     bedrock_island(level, 1, 0)
 
     # nether
-    soul_sand_island(nether, 0, -1)
+    soul_sand_island(nether, 0, 0)
 
-    # end
-    obsidian_island(the_end, 0, 1)
-    portal_island(the_end, -1, 1)
+    # the_end
+    # Manually creating the_end does NOT create an ender dragon, so I don't
+    # need to figure out how to remove it.
+    obsidian_island(the_end, 6, 0)
+    portal_island(the_end, 0, 0)
 
     level.generateLights()
     level.saveInPlace()
@@ -220,10 +222,14 @@ def bedrock_island(level, chunkX, chunkZ):
 def obsidian_island(level, chunkX, chunkZ):
     # End
     chunk = level.getChunk(chunkX, chunkZ)
+    chunk2 = level.getChunk(chunkX, chunkZ-1)
 
     # Obsidian
+    # When the player is teleported to the_end, it appears that they go to
+    # a fixed point at X:100,Y:49(foot),Z:0.
     obsidian_id = level.materials.Obsidian.ID
-    chunk.Blocks[base:base+4, base:base+4, 60:64] = obsidian_id
+    chunk.Blocks[base-2:base+3, 0:base-1, 44:49] = obsidian_id
+    chunk2.Blocks[base-2:base+3, base-6:, 44:49] = obsidian_id
 
     chunk.chunkChanged()
 
@@ -233,30 +239,30 @@ def portal_island(level, chunkX, chunkZ):
 
     # Bedrock frame
     bedrock_id = level.materials.Bedrock.ID
-    chunk.Blocks[base-2:base+3, base-1:base+2, 63] = bedrock_id
-    chunk.Blocks[base-1:base+2, base-2:base+3, 63] = bedrock_id
-    chunk.Blocks[base-1:base+2, base-3:base+4, 64] = bedrock_id
-    chunk.Blocks[base-2:base+3, base-2:base+3, 64] = bedrock_id
-    chunk.Blocks[base-3:base+4, base-1:base+2, 64] = bedrock_id
+    chunk.Blocks[base-2:base+3, base-1:base+2, 62] = bedrock_id
+    chunk.Blocks[base-1:base+2, base-2:base+3, 62] = bedrock_id
+    chunk.Blocks[base-1:base+2, base-3:base+4, 63] = bedrock_id
+    chunk.Blocks[base-2:base+3, base-2:base+3, 63] = bedrock_id
+    chunk.Blocks[base-3:base+4, base-1:base+2, 63] = bedrock_id
 
     # Portal
     portal_id = level.materials.EnderPortal.ID
-    chunk.Blocks[base-2:base+3, base-1:base+2, 64] = portal_id
-    chunk.Blocks[base-1:base+2, base-2:base+3, 64] = portal_id
+    chunk.Blocks[base-2:base+3, base-1:base+2, 63] = portal_id
+    chunk.Blocks[base-1:base+2, base-2:base+3, 63] = portal_id
 
     # Bedrock spire
-    chunk.Blocks[base, base, 63:68] = bedrock_id
+    chunk.Blocks[base, base, 62:67] = bedrock_id
 
     # Torches
     torch_id = level.materials.Torch.ID
-    chunk.Blocks[base+0, base-1, 66], chunk.Data[base+0, base-1, 66] = (torch_id, 4)
-    chunk.Blocks[base+1, base+0, 66], chunk.Data[base+1, base+0, 66] = (torch_id, 1)
-    chunk.Blocks[base+0, base+1, 66], chunk.Data[base+0, base+1, 66] = (torch_id, 3)
-    chunk.Blocks[base-1, base+0, 66], chunk.Data[base-1, base+0, 66] = (torch_id, 2)
+    chunk.Blocks[base+0, base-1, 65], chunk.Data[base+0, base-1, 65] = (torch_id, 4)
+    chunk.Blocks[base+1, base+0, 65], chunk.Data[base+1, base+0, 65] = (torch_id, 1)
+    chunk.Blocks[base+0, base+1, 65], chunk.Data[base+0, base+1, 65] = (torch_id, 3)
+    chunk.Blocks[base-1, base+0, 65], chunk.Data[base-1, base+0, 65] = (torch_id, 2)
 
     # Dragon Egg
     dragon_egg_id = level.materials.DragonEgg.ID
-    chunk.Blocks[base, base, 68] = dragon_egg_id
+    chunk.Blocks[base, base, 67] = dragon_egg_id
 
     chunk.chunkChanged()
 
