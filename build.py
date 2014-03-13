@@ -17,6 +17,8 @@ base = 4
 def main():
     # Set random_seed explicitly just to avoid randomness
     level = MCInfdevOldLevel(settings.output_filename, create=True, random_seed=1)
+    nether = level.getDimension(-1)
+    the_end = level.getDimension(1)
     # TODO: The following line is for testing only.  Be sure it's
     # commented out before releasing!
     level.GameType = level.GAMETYPE_CREATIVE
@@ -34,11 +36,11 @@ def main():
     bedrock_island(level, 1, 0)
 
     # nether
-    soul_sand_island(level, 0, -1)
+    soul_sand_island(nether, 0, -1)
 
     # end
-    obsidian_island(level, 0, 1)
-    portal_island(level, -1, 1)
+    obsidian_island(the_end, 0, 1)
+    portal_island(the_end, -1, 1)
 
     level.generateLights()
     level.saveInPlace()
