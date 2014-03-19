@@ -85,7 +85,6 @@ Items/blocks:
       * Coordinates of witch hut
       * Coordinates of biomes
       * Jukebox
-      * Collection of records
       * Enchanting table
 * Return portal about 30 blocks from End stone island
   * Dragon egg as a trophy
@@ -119,6 +118,7 @@ Dirt island:
 * Snowball
 * Ink
 * Fish (and everything else fishable)
+* Collection of records
 
 Sand island:
 * Cactus farm
