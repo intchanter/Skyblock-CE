@@ -8,6 +8,7 @@ from pymclevel import TAG_List
 from pymclevel import TAG_Short
 from pymclevel import TAG_Byte
 from pymclevel import TAG_String
+from pymclevel.mclevelbase import ChunkNotPresent
 from pymclevel.items import items
 
 # So we can use relative figures and shift them all around slightly
@@ -17,8 +18,23 @@ base = 4
 def main():
     # Set random_seed explicitly just to avoid randomness
     level = MCInfdevOldLevel(settings.output_filename, create=True, random_seed=1)
+    # Make the overworld superflat, one layer of air, ice plains
+    # String format is:
+    # <version> (I'm using 2 for compatibility with 1.7)
+    # <semicolon>
+    # comma-separated list of <block_id> | <block_id> "x" <count>
+    # <semicolon>
+    # <biome_id>
+    # <semicolon>
+    # comma-separated list of structures to generate
+    overworld = level
+    overworld.root_tag['Data']['generatorName'] = TAG_String(u'flat')
+    overworld.root_tag['Data']['generatorOptions'] = TAG_String(u'2;0;12;')
+
     nether = level.getDimension(-1)
+
     the_end = level.getDimension(1)
+
     # TODO: The following line is for testing only.  Be sure it's
     # commented out before releasing!
     level.GameType = level.GAMETYPE_CREATIVE
@@ -28,7 +44,8 @@ def main():
     level.setPlayerPosition( (px, py + 2, pz) )
     level.setPlayerSpawnPosition( (px, py, pz) )
 
-    create_empty_chunks(level, radius=15)
+    create_empty_chunks(nether, radius=15)
+    create_empty_chunks(the_end, radius=15)
 
     # overworld
     dirt_island(level, 0, 0)
@@ -71,17 +88,30 @@ def make_chest(level, chunk, pos, contents):
         slot += 1
     chunk.TileEntities.append(chest)
 
+def grabChunk(level, chunkX, chunkZ):
+    try:
+        level.createChunk(chunkX, chunkZ)
+    except ValueError:
+        pass
+    chunk = level.getChunk(chunkX, chunkZ)
+    chunk.chunkChanged()
+    return chunk
+
+def clear(level, chunkX, chunkZ):
+    chunk = grabChunk(level, chunkX, chunkZ)
+    chunk.Blocks[:, :, :] = 0  # air_id
+    #chunk.Blocks[:, :, :] = 17
+    chunk.chunkChanged()
+    return chunk
+
 def create_empty_chunks(level, radius=0):
-    dimensions = [level.getDimension(-1), level, level.getDimension(1)]
-    for dimension in dimensions:
-        for chunkX in range(-radius, radius + 1):
-            for chunkZ in range(-radius, radius + 1):
-                dimension.createChunk(chunkX, chunkZ)
-                chunk = dimension.getChunk(chunkX, chunkZ)
-                chunk.chunkChanged()
+    for chunkX in range(-radius, radius + 1):
+        for chunkZ in range(-radius, radius + 1):
+            level.createChunk(chunkX, chunkZ)
 
 def dirt_island(level, chunkX, chunkZ):
     # Main
+    clear(level, chunkX, chunkZ)
     chunk = level.getChunk(chunkX, chunkZ)
 
     # Dirt
@@ -120,6 +150,7 @@ def dirt_island(level, chunkX, chunkZ):
 
 def sand_island(level, chunkX, chunkZ):
     # Main
+    clear(level, chunkX, chunkZ)
     chunk = level.getChunk(chunkX, chunkZ)
 
     # Sand
@@ -186,6 +217,7 @@ def soul_sand_island(level, chunkX, chunkZ):
     chunk.chunkChanged()
 
 def bedrock_island(level, chunkX, chunkZ):
+    clear(level, chunkX, chunkZ)
     chunk = level.getChunk(chunkX, chunkZ)
 
     # Bedrock
@@ -222,7 +254,7 @@ def bedrock_island(level, chunkX, chunkZ):
 def obsidian_island(level, chunkX, chunkZ):
     # End
     chunk = level.getChunk(chunkX, chunkZ)
-    chunk2 = level.getChunk(chunkX, chunkZ-1)
+    chunk2 = level.getChunk(chunkX, chunkZ - 1)
 
     # Obsidian
     # When the player is teleported to the_end, it appears that they go to
