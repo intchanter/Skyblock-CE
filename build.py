@@ -18,18 +18,10 @@ base = 4
 def main():
     # Set random_seed explicitly just to avoid randomness
     level = MCInfdevOldLevel(settings.output_filename, create=True, random_seed=1)
-    # Make the overworld superflat, one layer of air, ice plains
-    # String format is:
-    # <version> (I'm using 2 for compatibility with 1.7)
-    # <semicolon>
-    # comma-separated list of <block_id> | <block_id> "x" <count>
-    # <semicolon>
-    # <biome_id>
-    # <semicolon>
-    # comma-separated list of structures to generate
     overworld = level
+    # Superflat: version 2, one layer of air, deep ocean biome
     overworld.root_tag['Data']['generatorName'] = TAG_String(u'flat')
-    overworld.root_tag['Data']['generatorOptions'] = TAG_String(u'2;0;12;')
+    overworld.root_tag['Data']['generatorOptions'] = TAG_String(u'2;0;24;')
 
     nether = level.getDimension(-1)
 
@@ -44,8 +36,10 @@ def main():
     level.setPlayerPosition( (px, py + 2, pz) )
     level.setPlayerSpawnPosition( (px, py, pz) )
 
+    create_empty_chunks(overworld, radius=15)
     create_empty_chunks(nether, radius=15)
     create_empty_chunks(the_end, radius=15)
+
 
     # overworld
     dirt_island(level, 0, 0)
@@ -61,6 +55,7 @@ def main():
     obsidian_island(the_end, 6, 0)
     portal_island(the_end, 0, 0)
 
+    biomify(overworld)
     level.generateLights()
     level.saveInPlace()
 
@@ -100,7 +95,7 @@ def grabChunk(level, chunkX, chunkZ):
 def clear(level, chunkX, chunkZ):
     chunk = grabChunk(level, chunkX, chunkZ)
     chunk.Blocks[:, :, :] = 0  # air_id
-    #chunk.Blocks[:, :, :] = 17
+    chunk.Biomes[:, :] = -1  # not yet calculated
     chunk.chunkChanged()
     return chunk
 
@@ -297,6 +292,33 @@ def portal_island(level, chunkX, chunkZ):
     chunk.Blocks[base, base, 67] = dragon_egg_id
 
     chunk.chunkChanged()
+
+def biomify(level):
+    desired_biomes = [
+            10, # Frozen Ocean
+            10, # Frozen Ocean
+            26, # Cold Beach
+            4, # Forest
+            27, # Birch Forest
+            132, # Flower Forest
+            21, # Jungle
+            5, # Taiga
+            6, # Swampland
+            129, # Sunflower Plains
+            35, # Savannah
+            1, # Plains
+            16, # Beach
+            0, # Ocean
+            14, # Mooshroom Island
+            0, # Ocean
+            ]
+    radius = len(desired_biomes) - 1
+    for chunkZ in range(-radius, radius + 1):
+        for chunkX in range(-radius, radius + 1):
+            chunk = level.getChunk(chunkX, chunkZ)
+            biome = desired_biomes[max(abs(chunkX), abs(chunkZ))]
+            chunk.Biomes[:, :] = biome
+            chunk.chunkChanged()
 
 if __name__ == '__main__':
     main()
