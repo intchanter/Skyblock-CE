@@ -83,7 +83,6 @@ Items/blocks:
     * 3 pieces of diamond
     * Final objectives book
       * Coordinates of witch hut
-      * Coordinates of biomes
       * Jukebox
       * Enchanting table
 * Return portal about 30 blocks from End stone island
