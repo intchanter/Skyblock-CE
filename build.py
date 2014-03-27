@@ -53,7 +53,7 @@ def main():
     # Manually creating the_end does NOT create an ender dragon, so I don't
     # need to figure out how to remove it.
     obsidian_island(the_end, 6, 0)
-    portal_island(the_end, 0, 0)
+    portal_island(the_end, 4, 0)
 
     biomify(overworld)
     level.generateLights()
@@ -160,17 +160,18 @@ def sand_island(level, chunkX, chunkZ):
     contents = [
             {'id': items.names['Obsidian'],
                 'count': 10, 'damage': 0},
-            # The melon slice item can't be referenced due to a name conflict
-            # TODO: I submitted a patch to pymclevel's items.py for this.
-            # Once it goes in, use the following line instead.
             #{'id': items.names['Melon Slice'],
-            {'id': items.names['Melon'],
+            {'id': 360, #items.names['Melon'],
+                'count': 1, 'damage': 0},
+            {'id': items.names['Spruce Sapling'],
+                'count': 2, 'damage': 0},
+            {'id': items.names['Pumpkin Seeds'],
                 'count': 1, 'damage': 0},
             ]
     # Entities need the world-wide coordinates?!
     chunkX *= 16
     chunkZ *= 16
-    make_chest(level, chunk, (chunkX+base+2, chunkZ+base+2, 64), contents)
+    make_chest(level, chunk, (chunkX+base+3, chunkZ+base+3, 64), contents)
 
     chunk.chunkChanged()
 
@@ -196,10 +197,16 @@ def soul_sand_island(level, chunkX, chunkZ):
     contents = [
             {'id': items.names['Ice'],
                 'count': 1, 'damage': 0},
+            {'id': 6, #items.names['Dark Oak Sapling'],
+                'count': 2, 'damage': 5},
+            {'id': items.names['Birch Sapling'],
+                'count': 2, 'damage': 2},
+            {'id': items.names['Sugar Canes'],
+                'count': 1, 'damage': 0},
             ]
     chunkX *= 16
     chunkZ *= 16
-    make_chest(level, chunk, (chunkX+base+2, chunkZ+base+2, 64), contents)
+    make_chest(level, chunk, (chunkX+base+3, chunkZ+base+3, 64), contents)
 
     # Mushrooms and Netherwart
     red_mushroom_id = level.materials.RedMushroom.ID
@@ -237,8 +244,22 @@ def bedrock_island(level, chunkX, chunkZ):
 
     # Chest
     contents = [
-            {'id': items.names['Ice'],
+            {'id': items.names['Fern'],
+                'count': 1, 'damage': 2},
+            {'id': 175, #items.names['Sunflower'],
                 'count': 1, 'damage': 0},
+            {'id': 175, #items.names['Lilac'],
+                'count': 1, 'damage': 1},
+            {'id': 175, #items.names['Rose Bush'],
+                'count': 1, 'damage': 4},
+            {'id': 175, #items.names['Peony Bush'],
+                'count': 1, 'damage': 5},
+            {'id': 6, #items.names['Acacia Sapling'],
+                'count': 2, 'damage': 4},
+            {'id': 6, #items.names['Jungle Sapling'],
+                'count': 2, 'damage': 3},
+            {'id': items.names['Cocoa Beans'],
+                'count': 1, 'damage': 3},
             ]
     chunkX *= 16
     chunkZ *= 16
@@ -255,8 +276,19 @@ def obsidian_island(level, chunkX, chunkZ):
     # When the player is teleported to the_end, it appears that they go to
     # a fixed point at X:100,Y:49(foot),Z:0.
     obsidian_id = level.materials.Obsidian.ID
+    air_id = level.materials.Air.ID
     chunk.Blocks[base-2:base+3, 0:base-1, 44:49] = obsidian_id
     chunk2.Blocks[base-2:base+3, base-6:, 44:49] = obsidian_id
+    chunk.Blocks[base-1:base+2, 0:base-2, 45:48] = air_id
+    chunk2.Blocks[base-1:base+2, base-5:, 45:48] = air_id
+
+    contents = [
+            {'id': items.names['Diamond'],
+                'count': 3, 'damage': 0},
+            ]
+    chunkX *= 16
+    chunkZ *= 16
+    make_chest(level, chunk, (chunkX+base, chunkZ+base-4, 45), contents)
 
     chunk.chunkChanged()
 
@@ -266,30 +298,30 @@ def portal_island(level, chunkX, chunkZ):
 
     # Bedrock frame
     bedrock_id = level.materials.Bedrock.ID
-    chunk.Blocks[base-2:base+3, base-1:base+2, 62] = bedrock_id
-    chunk.Blocks[base-1:base+2, base-2:base+3, 62] = bedrock_id
-    chunk.Blocks[base-1:base+2, base-3:base+4, 63] = bedrock_id
-    chunk.Blocks[base-2:base+3, base-2:base+3, 63] = bedrock_id
-    chunk.Blocks[base-3:base+4, base-1:base+2, 63] = bedrock_id
+    chunk.Blocks[base-2:base+3, base-1:base+2, 47] = bedrock_id
+    chunk.Blocks[base-1:base+2, base-2:base+3, 47] = bedrock_id
+    chunk.Blocks[base-1:base+2, base-3:base+4, 48] = bedrock_id
+    chunk.Blocks[base-2:base+3, base-2:base+3, 48] = bedrock_id
+    chunk.Blocks[base-3:base+4, base-1:base+2, 48] = bedrock_id
 
     # Portal
     portal_id = level.materials.EnderPortal.ID
-    chunk.Blocks[base-2:base+3, base-1:base+2, 63] = portal_id
-    chunk.Blocks[base-1:base+2, base-2:base+3, 63] = portal_id
+    chunk.Blocks[base-2:base+3, base-1:base+2, 48] = portal_id
+    chunk.Blocks[base-1:base+2, base-2:base+3, 48] = portal_id
 
     # Bedrock spire
-    chunk.Blocks[base, base, 62:67] = bedrock_id
+    chunk.Blocks[base, base, 47:52] = bedrock_id
 
     # Torches
     torch_id = level.materials.Torch.ID
-    chunk.Blocks[base+0, base-1, 65], chunk.Data[base+0, base-1, 65] = (torch_id, 4)
-    chunk.Blocks[base+1, base+0, 65], chunk.Data[base+1, base+0, 65] = (torch_id, 1)
-    chunk.Blocks[base+0, base+1, 65], chunk.Data[base+0, base+1, 65] = (torch_id, 3)
-    chunk.Blocks[base-1, base+0, 65], chunk.Data[base-1, base+0, 65] = (torch_id, 2)
+    chunk.Blocks[base+0, base-1, 50], chunk.Data[base+0, base-1, 50] = (torch_id, 4)
+    chunk.Blocks[base+1, base+0, 50], chunk.Data[base+1, base+0, 50] = (torch_id, 1)
+    chunk.Blocks[base+0, base+1, 50], chunk.Data[base+0, base+1, 50] = (torch_id, 3)
+    chunk.Blocks[base-1, base+0, 50], chunk.Data[base-1, base+0, 50] = (torch_id, 2)
 
     # Dragon Egg
     dragon_egg_id = level.materials.DragonEgg.ID
-    chunk.Blocks[base, base, 67] = dragon_egg_id
+    chunk.Blocks[base, base, 52] = dragon_egg_id
 
     chunk.chunkChanged()
 
