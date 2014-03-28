@@ -37,8 +37,8 @@ def main():
     level.setPlayerSpawnPosition( (px, py, pz) )
 
     create_empty_chunks(overworld, radius=15)
-    create_empty_chunks(nether, radius=15)
-    create_empty_chunks(the_end, radius=15)
+    create_empty_chunks(nether, radius=20)
+    create_empty_chunks(the_end, radius=10)
 
 
     # overworld
@@ -61,11 +61,26 @@ def main():
 
 def item_stack(item):
     item_tag = TAG_Compound()
-    item_tag.name = ''
+    item_tag.name = 'tag'
     item_tag['id'] = TAG_Short(item['id'])
     item_tag['Damage'] = TAG_Short(item['damage'])
     item_tag['Count'] = TAG_Byte(item['count'])
     item_tag['Slot'] = TAG_Byte(item['slot'])
+    return item_tag
+
+def signed_book(title='', pages=[''], author='Skyblock CE'):
+    book_tag = TAG_Compound()
+    book_tag.name = 'tag'
+    book_tag['title'] = title
+    book_tag['author'] = author
+    book_tag['pages'] = TAG_List(name='pages', list_type=TAG_String)
+    for page in pages:
+        book_tag['pages'].append(TAG_String(page))
+    item_tag = TAG_Compound()
+    item_tag['id'] = TAG_Short(items.names['Written Book'])
+    item_tag['Damage'] = TAG_Byte(0)
+    item_tag['Count'] = TAG_Byte(1)
+    item_tag['tag'] = book_tag
     return item_tag
 
 def make_chest(level, chunk, pos, contents):
@@ -78,8 +93,13 @@ def make_chest(level, chunk, pos, contents):
     TileEntity.setpos(chest, (x, y, z))
     slot = 0
     for item in contents:
-        item['slot'] = slot
-        chest['Items'].append(item_stack(item))
+        try:
+            item.name  # Already a TAG_Compound?
+            item['Slot'] = TAG_Byte(slot)
+            chest['Items'].append(item)
+        except AttributeError:
+            item['slot'] = slot
+            chest['Items'].append(item_stack(item))
         slot += 1
     chunk.TileEntities.append(chest)
 
@@ -138,6 +158,12 @@ def dirt_island(level, chunkX, chunkZ):
                 'count': 1, 'damage': 0},
             {'id': items.names['Lava Bucket'],
                 'count': 1, 'damage': 0},
+            signed_book(
+                'Welcome to Skyblock CE!',
+                [   'Page 1',
+                    'Page 2',
+                    ]
+                ),
             ]
     chunkX *= 16
     chunkZ *= 16
