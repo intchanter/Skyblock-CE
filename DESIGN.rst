@@ -103,7 +103,7 @@ Dirt island:
 * Oak leaf
 * Apple
 * Seed
-* Iron
+* Iron (ingot, block)
 * Potato
 * Carrot
 * Fire
@@ -134,17 +134,44 @@ Soul sand island:
 * Netherwart
 * Birch leaves
 * Birch wood
+* Birch sapling
 * Water
 * Ice
-* Gold
+* Gold (nugget, ingot, block)
 * Ghast tear
 * Blaze rod
 * Coal
 * Wither skeleton head
-* ...
+* Craft and fight a Wither (how crazy are you?)
+* Enchanting stand
+* Potions!
+* Heal some villagers
+* Golem farm
+* Villager trades
+* Dark oak leaves
+* Dark oak wood
+* Dark oak sapling
+* Sugar cane
+* Sugar
+* Fermented spider eye
+
+Bedrock island:
+* Fern
+* Sunflower
+* Rose bush
+* Lilac
+* Peony
+* Acacia sapling
+* Acacia wood
+* Acacia leaves
+* Jungle sapling
+* Jungle wood
+* Jungle leaves
+* Cocoa
 
 Obsidian island:
-* ...
+* Jukebox
+* Enchanting table
 
 Return portal:
-* ...
+* Ender dragon egg
