@@ -17,7 +17,9 @@ base = 4
 
 def main():
     # Set random_seed explicitly just to avoid randomness
-    level = MCInfdevOldLevel(settings.output_filename, create=True, random_seed=1)
+    level = MCInfdevOldLevel(settings.output_filename,
+                             create=True,
+                             random_seed=1)
     overworld = level
     # Superflat: version 2, one layer of air, deep ocean biome
     overworld.root_tag['Data']['generatorName'] = TAG_String(u'flat')
@@ -33,13 +35,12 @@ def main():
 
     # Place the player
     px, py, pz = (6, 64, 6)
-    level.setPlayerPosition( (px, py + 2, pz) )
-    level.setPlayerSpawnPosition( (px, py, pz) )
+    level.setPlayerPosition((px, py + 2, pz))
+    level.setPlayerSpawnPosition((px, py, pz))
 
     create_empty_chunks(overworld, radius=15)
     create_empty_chunks(nether, radius=20)
     create_empty_chunks(the_end, radius=10)
-
 
     # overworld
     dirt_island(level, 0, 0)
@@ -59,6 +60,7 @@ def main():
     level.generateLights()
     level.saveInPlace()
 
+
 def item_stack(item):
     item_tag = TAG_Compound()
     item_tag.name = 'tag'
@@ -67,6 +69,7 @@ def item_stack(item):
     item_tag['Count'] = TAG_Byte(item['count'])
     item_tag['Slot'] = TAG_Byte(item['slot'])
     return item_tag
+
 
 def signed_book(title='', pages=[''], author='Skyblock CE'):
     book_tag = TAG_Compound()
@@ -82,6 +85,7 @@ def signed_book(title='', pages=[''], author='Skyblock CE'):
     item_tag['Count'] = TAG_Byte(1)
     item_tag['tag'] = book_tag
     return item_tag
+
 
 def make_chest(level, chunk, pos, contents):
     x, z, y = pos
@@ -103,6 +107,7 @@ def make_chest(level, chunk, pos, contents):
         slot += 1
     chunk.TileEntities.append(chest)
 
+
 def grabChunk(level, chunkX, chunkZ):
     try:
         level.createChunk(chunkX, chunkZ)
@@ -112,6 +117,7 @@ def grabChunk(level, chunkX, chunkZ):
     chunk.chunkChanged()
     return chunk
 
+
 def clear(level, chunkX, chunkZ):
     chunk = grabChunk(level, chunkX, chunkZ)
     chunk.Blocks[:, :, :] = 0  # air_id
@@ -119,10 +125,12 @@ def clear(level, chunkX, chunkZ):
     chunk.chunkChanged()
     return chunk
 
+
 def create_empty_chunks(level, radius=0):
     for chunkX in range(-radius, radius + 1):
         for chunkZ in range(-radius, radius + 1):
             level.createChunk(chunkX, chunkZ)
+
 
 def dirt_island(level, chunkX, chunkZ):
     # Main
@@ -154,20 +162,20 @@ def dirt_island(level, chunkX, chunkZ):
 
     # Chest
     contents = [
-            {'id': items.names['Ice'],
-                'count': 1, 'damage': 0},
-            {'id': items.names['Lava Bucket'],
-                'count': 1, 'damage': 0},
-            signed_book(
-                'Welcome to Skyblock CE!',
-                [   'Page 1',
-                    'Page 2',
-                    ]
-                ),
-            ]
+        {'id': items.names['Ice'],
+            'count': 1, 'damage': 0},
+        {'id': items.names['Lava Bucket'],
+            'count': 1, 'damage': 0},
+        signed_book(
+            'Welcome to Skyblock CE!',
+            ['Page 1',
+                'Page 2']
+            ),
+        ]
     chunkX *= 16
     chunkZ *= 16
     make_chest(level, chunk, (chunkX+base+7, chunkZ+base+2, 64), contents)
+
 
 def sand_island(level, chunkX, chunkZ):
     # Main
@@ -184,22 +192,30 @@ def sand_island(level, chunkX, chunkZ):
 
     # Chest
     contents = [
-            {'id': items.names['Obsidian'],
-                'count': 10, 'damage': 0},
-            #{'id': items.names['Melon Slice'],
-            {'id': 360, #items.names['Melon'],
-                'count': 1, 'damage': 0},
-            {'id': items.names['Spruce Sapling'],
-                'count': 2, 'damage': 0},
-            {'id': items.names['Pumpkin Seeds'],
-                'count': 1, 'damage': 0},
-            ]
+        {'id': items.names['Obsidian'],
+            'count': 10, 'damage': 0},
+        # {'id': items.names['Melon Slice'],
+        {'id': 360,  # items.names['Melon'],
+            'count': 1, 'damage': 0},
+        {'id': items.names['Spruce Sapling'],
+            'count': 2, 'damage': 0},
+        {'id': items.names['Pumpkin Seeds'],
+            'count': 1, 'damage': 0},
+        signed_book(
+            'Sand Island Objectives',
+            ["Now that you've reached the sand island, new objectives"
+                + " are possible:\n\n",
+                '',
+                ''],
+            )
+    ]
     # Entities need the world-wide coordinates?!
     chunkX *= 16
     chunkZ *= 16
     make_chest(level, chunk, (chunkX+base+3, chunkZ+base+3, 64), contents)
 
     chunk.chunkChanged()
+
 
 def soul_sand_island(level, chunkX, chunkZ):
     chunk = level.getChunk(chunkX, chunkZ)
@@ -221,15 +237,15 @@ def soul_sand_island(level, chunkX, chunkZ):
 
     # Chest
     contents = [
-            {'id': items.names['Ice'],
-                'count': 1, 'damage': 0},
-            {'id': 6, #items.names['Dark Oak Sapling'],
-                'count': 2, 'damage': 5},
-            {'id': items.names['Birch Sapling'],
-                'count': 2, 'damage': 2},
-            {'id': items.names['Sugar Canes'],
-                'count': 1, 'damage': 0},
-            ]
+        {'id': items.names['Ice'],
+            'count': 1, 'damage': 0},
+        {'id': 6,  # items.names['Dark Oak Sapling'],
+            'count': 2, 'damage': 5},
+        {'id': items.names['Birch Sapling'],
+            'count': 2, 'damage': 2},
+        {'id': items.names['Sugar Canes'],
+            'count': 1, 'damage': 0},
+        ]
     chunkX *= 16
     chunkZ *= 16
     make_chest(level, chunk, (chunkX+base+3, chunkZ+base+3, 64), contents)
@@ -243,6 +259,7 @@ def soul_sand_island(level, chunkX, chunkZ):
     chunk.Blocks[base, base, 64] = netherwart_id
 
     chunk.chunkChanged()
+
 
 def bedrock_island(level, chunkX, chunkZ):
     clear(level, chunkX, chunkZ)
@@ -270,28 +287,29 @@ def bedrock_island(level, chunkX, chunkZ):
 
     # Chest
     contents = [
-            {'id': items.names['Fern'],
-                'count': 1, 'damage': 2},
-            {'id': 175, #items.names['Sunflower'],
-                'count': 1, 'damage': 0},
-            {'id': 175, #items.names['Lilac'],
-                'count': 1, 'damage': 1},
-            {'id': 175, #items.names['Rose Bush'],
-                'count': 1, 'damage': 4},
-            {'id': 175, #items.names['Peony Bush'],
-                'count': 1, 'damage': 5},
-            {'id': 6, #items.names['Acacia Sapling'],
-                'count': 2, 'damage': 4},
-            {'id': 6, #items.names['Jungle Sapling'],
-                'count': 2, 'damage': 3},
-            {'id': items.names['Cocoa Beans'],
-                'count': 1, 'damage': 3},
-            ]
+        {'id': items.names['Fern'],
+            'count': 1, 'damage': 2},
+        {'id': 175,  # items.names['Sunflower'],
+            'count': 1, 'damage': 0},
+        {'id': 175,  # items.names['Lilac'],
+            'count': 1, 'damage': 1},
+        {'id': 175,  # items.names['Rose Bush'],
+            'count': 1, 'damage': 4},
+        {'id': 175,  # items.names['Peony Bush'],
+            'count': 1, 'damage': 5},
+        {'id': 6,  # items.names['Acacia Sapling'],
+            'count': 2, 'damage': 4},
+        {'id': 6,  # items.names['Jungle Sapling'],
+            'count': 2, 'damage': 3},
+        {'id': items.names['Cocoa Beans'],
+            'count': 1, 'damage': 3},
+        ]
     chunkX *= 16
     chunkZ *= 16
     make_chest(level, chunk, (chunkX+base+3, chunkZ+base+3, 1), contents)
 
     chunk.chunkChanged()
+
 
 def obsidian_island(level, chunkX, chunkZ):
     # End
@@ -309,14 +327,20 @@ def obsidian_island(level, chunkX, chunkZ):
     chunk2.Blocks[base-1:base+2, base-5:, 45:48] = air_id
 
     contents = [
-            {'id': items.names['Diamond'],
-                'count': 3, 'damage': 0},
-            ]
+        {'id': items.names['Diamond'],
+            'count': 3, 'damage': 0},
+        signed_book(
+            'Credits',
+            ["",
+                ''],
+            )
+        ]
     chunkX *= 16
     chunkZ *= 16
     make_chest(level, chunk, (chunkX+base, chunkZ+base-4, 45), contents)
 
     chunk.chunkChanged()
+
 
 def portal_island(level, chunkX, chunkZ):
     # End
@@ -340,10 +364,14 @@ def portal_island(level, chunkX, chunkZ):
 
     # Torches
     torch_id = level.materials.Torch.ID
-    chunk.Blocks[base+0, base-1, 50], chunk.Data[base+0, base-1, 50] = (torch_id, 4)
-    chunk.Blocks[base+1, base+0, 50], chunk.Data[base+1, base+0, 50] = (torch_id, 1)
-    chunk.Blocks[base+0, base+1, 50], chunk.Data[base+0, base+1, 50] = (torch_id, 3)
-    chunk.Blocks[base-1, base+0, 50], chunk.Data[base-1, base+0, 50] = (torch_id, 2)
+    (chunk.Blocks[base+0, base-1, 50],
+        chunk.Data[base+0, base-1, 50]) = (torch_id, 4)
+    (chunk.Blocks[base+1, base+0, 50],
+        chunk.Data[base+1, base+0, 50]) = (torch_id, 1)
+    (chunk.Blocks[base+0, base+1, 50],
+        chunk.Data[base+0, base+1, 50]) = (torch_id, 3)
+    (chunk.Blocks[base-1, base+0, 50],
+        chunk.Data[base-1, base+0, 50]) = (torch_id, 2)
 
     # Dragon Egg
     dragon_egg_id = level.materials.DragonEgg.ID
@@ -351,25 +379,26 @@ def portal_island(level, chunkX, chunkZ):
 
     chunk.chunkChanged()
 
+
 def biomify(level):
     desired_biomes = [
-            10, # Frozen Ocean
-            10, # Frozen Ocean
-            26, # Cold Beach
-            4, # Forest
-            27, # Birch Forest
-            132, # Flower Forest
-            21, # Jungle
-            5, # Taiga
-            6, # Swampland
-            129, # Sunflower Plains
-            35, # Savannah
-            1, # Plains
-            16, # Beach
-            0, # Ocean
-            14, # Mooshroom Island
-            0, # Ocean
-            ]
+        10,  # Frozen Ocean
+        10,  # Frozen Ocean
+        26,  # Cold Beach
+        4,  # Forest
+        27,  # Birch Forest
+        132,  # Flower Forest
+        21,  # Jungle
+        5,  # Taiga
+        6,  # Swampland
+        129,  # Sunflower Plains
+        35,  # Savannah
+        1,  # Plains
+        16,  # Beach
+        0,  # Ocean
+        14,  # Mooshroom Island
+        0,  # Ocean
+    ]
     radius = len(desired_biomes) - 1
     for chunkZ in range(-radius, radius + 1):
         for chunkX in range(-radius, radius + 1):
