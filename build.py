@@ -198,7 +198,7 @@ def sand_island(level, chunkX, chunkZ):
         {'id': 360,  # items.names['Melon'],
             'count': 1, 'damage': 0},
         {'id': items.names['Spruce Sapling'],
-            'count': 2, 'damage': 0},
+            'count': 2, 'damage': 1},
         {'id': items.names['Pumpkin Seeds'],
             'count': 1, 'damage': 0},
         signed_book(
