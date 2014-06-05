@@ -308,6 +308,11 @@ def bedrock_island(level, chunkX, chunkZ):
     chunkZ *= 16
     make_chest(level, chunk, (chunkX+base+3, chunkZ+base+3, 1), contents)
 
+    # Light this so it's less likely that something will go terribly wrong and
+    # destroy the chest.  Also, stop stealing spawning slots.
+    torch_id = level.materials.Torch.ID
+    chunk.Blocks[base+4, base+4, 1] = torch_id
+
     chunk.chunkChanged()
 
 
