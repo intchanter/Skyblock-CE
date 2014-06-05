@@ -29,9 +29,8 @@ def main():
 
     the_end = level.getDimension(1)
 
-    # TODO: The following line is for testing only.  Be sure it's
-    # commented out before releasing!
-    level.GameType = level.GAMETYPE_CREATIVE
+    if settings.creative:
+        level.GameType = level.GAMETYPE_CREATIVE
 
     # Place the player
     px, py, pz = (6, 64, 6)
