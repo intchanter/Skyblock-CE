@@ -6,6 +6,7 @@ A community-maintained version of the famous Skyblock map by Noobcrew
 Prerequisites
 =============
 
+* A computer with a Unix-like operating system (including Mac and Linux)
 * Python 2.7 (available by default on many systems)
 * pip (sudo easy_install pip)
 * virtualenv (sudo pip install virtualenv)
