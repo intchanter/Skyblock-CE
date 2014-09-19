@@ -38,8 +38,8 @@ def main():
     level.setPlayerSpawnPosition((px, py, pz))
 
     create_empty_chunks(overworld, radius=15)
-    create_empty_chunks(nether, radius=20)
-    create_empty_chunks(the_end, radius=10)
+    create_empty_chunks(nether, radius=150)
+    create_empty_chunks(the_end, radius=20)
 
     # overworld
     dirt_island(level, 0, 0)
