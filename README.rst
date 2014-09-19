@@ -6,15 +6,16 @@ A community-maintained version of the famous Skyblock map by Noobcrew
 Prerequisites
 =============
 
-* Python 2.7
-* virtualenv
-* virtualenvwrapper (optional, but recommended)
-* -dev or -devel packages as required by the packages in requirements.txt
+* Python 2.7 (available by default on many systems)
+* pip (sudo easy_install pip)
+* virtualenv (sudo pip install virtualenv)
+* virtualenvwrapper (sudo pip install virtualenvwrapper)
+* -dev or -devel packages as required by the packages in requirements.txt - please submit an issue on Github if you have some of these missing so we can update this as necessary
 
 Getting Started
 ===============
 
-1. Create your virtualenv.  Using virtualenvwrapper, this is:
+1. Create and switch to your virtualenv:
 
  $ mkvirtualenv --python=<path to python-2.7> skyblock-ce
 
