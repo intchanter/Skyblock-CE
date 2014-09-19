@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/env python
 
 import settings
 from pymclevel import MCInfdevOldLevel
