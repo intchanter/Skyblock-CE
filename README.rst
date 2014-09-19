@@ -26,8 +26,12 @@ Getting Started
 
  $ pip install -r requirements2.txt
 
-4. Run the build script
+4a. Run the build script
 
- $ python build.py
+ $ ./build.py
+
+4b. (Optional, only for distribution) Run the zip script
+
+ $ ./zip.sh
 
 5. Realize that installing pymclevel didn't grab its required minecraft.yaml and manually download it into the library directory in the virtualenv.  Duplicate the effort for classic.yaml, indev.yaml, pocket.yaml, ...
