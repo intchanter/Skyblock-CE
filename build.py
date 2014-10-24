@@ -3,24 +3,151 @@
 import settings
 from pymclevel import MCInfdevOldLevel
 from pymclevel import TileEntity
+try:
+    TileEntity.baseStructures['Control']
+except KeyError:
+    from pymclevel import nbt
+    TileEntity.baseStructures['Control'] = (
+        ('Command', nbt.TAG_String),
+        ('LastOutput', nbt.TAG_String),
+    )
 from pymclevel import TAG_Compound
 from pymclevel import TAG_List
 from pymclevel import TAG_Short
 from pymclevel import TAG_Byte
 from pymclevel import TAG_String
-from pymclevel.mclevelbase import ChunkNotPresent
+# from pymclevel.mclevelbase import ChunkNotPresent
 from pymclevel.items import items
 
 # So we can use relative figures and shift them all around slightly
 base = 4
 
 
+class LevelSlice(object):
+    '''
+    This allows interacting with a slice of the world without worrying about
+    chunk boundaries.
+    '''
+
+    # TODO: Try pre-loading all the chunks for the slice and compare that
+    # against loading on demand.
+    def __init__(self, level, east=0, south=0, up=64, radius=16):
+        '''
+        up defaults to 64 to allow vertical positions to be specified
+        relative to standard overworld sea level.
+        '''
+        self.level = level
+        self.east = east
+        self.south = south
+        self.up = up
+        self.radius = radius
+        self.chunks = {}
+        self.load()
+
+    def load(self):
+        min_east_chunk = (self.east - self.radius) // 16
+        max_east_chunk = (self.east + self.radius) // 16
+        min_south_chunk = (self.south - self.radius) // 16
+        max_south_chunk = (self.south + self.radius) // 16
+        for east_chunk in range(min_east_chunk, max_east_chunk + 1):
+            for south_chunk in range(min_south_chunk, max_south_chunk + 1):
+                self.chunks[east_chunk, south_chunk] = grabChunk(
+                    self.level,
+                    east_chunk,
+                    south_chunk,
+                )
+
+    def save(self):
+        for chunk in self.chunks:
+            self.chunks[chunk].chunkChanged()
+
+    def empty(self):
+        self.set_blocks(
+            block_id=0,
+            minimum=(self.east - self.radius, self.south + self.radius),
+            maximum=(self.east - self.radius, self.south + self.radius),
+        )
+
+    def set_blocks(self,
+                   block_id,
+                   block_data=0,
+                   minimum=None,
+                   maximum=None,
+                   ):
+
+        # A very useful shorthand
+        if not minimum:
+            raise ValueError('set_blocks() requires a minimum point')
+        if not maximum:
+            raise ValueError('set_blocks() requires a maximum point')
+        if len(minimum) == 3:
+            min_east, min_south, min_up = minimum
+        elif len(minimum) == 2:
+            min_east, min_south = minimum
+            min_up = 0
+        else:
+            raise ValueError('set_blocks() received an invalid minimum point')
+        if len(maximum) == 3:
+            max_east, max_south, max_up = maximum
+        elif len(minimum) == 2:
+            max_east, max_south = maximum
+            max_up = 255
+        else:
+            raise ValueError('set_blocks() received an invalid maximum point')
+
+        for chunk_east, chunk_south in self.chunks.keys():
+            chunk = self.chunks[chunk_east, chunk_south]
+
+            # Don't do anything if this chunk doesn't intersect the region
+            if min_east > chunk_east * 16 + 15 or max_east < chunk_east * 16:
+                continue
+            if (min_south > chunk_south * 16 + 15
+                    or max_south < chunk_south * 16):
+                continue
+
+            # Normalize relative to this chunk
+            c_min_east = min_east % 16
+            c_max_east = max_east % 16
+            c_min_south = min_south % 16
+            c_max_south = max_south % 16
+            if min_east < chunk_east * 16:
+                c_min_east = 0
+            if max_east > chunk_east * 16 + 15:
+                c_max_east = 15
+            if min_south < chunk_south * 16:
+                c_min_south = 0
+            if max_south > chunk_south * 16 + 15:
+                c_max_south = 15
+
+            chunk.Blocks[
+                c_min_east:c_max_east + 1,
+                c_min_south:c_max_south + 1,
+                min_up:max_up + 1,
+            ] = block_id
+            chunk.Data[
+                c_min_east:c_max_east + 1,
+                c_min_south:c_max_south + 1,
+                min_up:max_up + 1,
+            ] = block_data
+
+    def add_entity(self, entity, position):
+        east, south, up = position
+        chunk_east = east // 16
+        chunk_south = south // 16
+        if not (chunk_east, chunk_south) in self.chunks:
+            raise KeyError('position not in world slice: {}'.format(position))
+        chunk = self.chunks[chunk_east, chunk_south]
+        TileEntity.setpos(entity, (east, up, south))
+        chunk.TileEntities.append(entity)
+
+
 def main():
     # Set random_seed explicitly just to avoid randomness
+    print('Creating level.')
     level = MCInfdevOldLevel(settings.output_filename,
                              create=True,
                              random_seed=1)
-    overworld = level
+    overworld = level.getDimension(0)
     # Superflat: version 2, one layer of air, deep ocean biome
     overworld.root_tag['Data']['generatorName'] = TAG_String(u'flat')
     overworld.root_tag['Data']['generatorOptions'] = TAG_String(u'2;0;24;')
@@ -32,30 +159,29 @@ def main():
     if settings.creative:
         level.GameType = level.GAMETYPE_CREATIVE
 
-    # Place the player
-    px, py, pz = (6, 64, 6)
-    level.setPlayerPosition((px, py + 2, pz))
-    level.setPlayerSpawnPosition((px, py, pz))
-
-    create_empty_chunks(overworld, radius=15)
-    create_empty_chunks(nether, radius=150)
-    create_empty_chunks(the_end, radius=20)
-
     # overworld
+    print('Generating overworld.')
+    create_empty_chunks(overworld, radius=15)
     dirt_island(level, 0, 0)
     sand_island(level, -3, 0)
     bedrock_island(level, 1, 0)
+    spawn_island(level, 1000000, 1000000)
+    biomify(overworld)
 
     # nether
+    print('Generating nether.')
+    create_empty_chunks(nether, radius=150)
     soul_sand_island(nether, 0, 0)
 
     # the_end
-    # Manually creating the_end does NOT create an ender dragon, so I don't
+    # Manually creating the_end does NOT spawn an ender dragon, so I don't
     # need to figure out how to remove it.
+    print('Generating the end.')
+    create_empty_chunks(the_end, radius=20)
     obsidian_island(the_end, 6, 0)
     portal_island(the_end, 4, 0)
 
-    biomify(overworld)
+    print('Finalizing and saving.')
     level.generateLights()
     level.saveInPlace()
 
@@ -113,6 +239,7 @@ def grabChunk(level, chunkX, chunkZ):
     except ValueError:
         pass
     chunk = level.getChunk(chunkX, chunkZ)
+    # TODO: Determine if the following call is necessary
     chunk.chunkChanged()
     return chunk
 
@@ -270,7 +397,6 @@ def bedrock_island(level, chunkX, chunkZ):
 
     # Air core
     air_id = level.materials.Air.ID
-    water_id = level.materials.Water.ID
     chunk.Blocks[base+1:base+7, base+1:base+7, 1:7] = air_id
     chunk.Blocks[:, :, 5] = air_id
 
@@ -382,6 +508,126 @@ def portal_island(level, chunkX, chunkZ):
     chunk.Blocks[base, base, 52] = dragon_egg_id
 
     chunk.chunkChanged()
+
+
+def spawn_island(level, east, south, target=(6, 6, 64)):
+    # TODO: Fill the coordinates based on the actual position of the dirt
+    # and spawn islands
+    block_radius = 13
+    pad_min_east = east - 10
+    pad_min_south = south - 10
+    pad_max_east = east + 10
+    pad_max_south = south + 10
+    pad_up = 0  # Bottom of the world so we can't ever spawn below it
+    wire_up = pad_up + 1
+    redstone_up = wire_up + 1
+    cap_up = redstone_up + 1
+    slab_id = 126
+    slab_data = 0  # oak, lower half
+    tripwire_id = 132
+    tripwire_data = 4 + 2  # attached and suspended
+    tripwire_hook_id = 131
+    tripwire_hook_n_data = 4 + 0  # connected, pointing south
+    tripwire_hook_s_data = 4 + 2  # connected, pointing north
+    redstone_wire_id = 55
+    command_block_id = 137
+    bedrock_id = 7
+
+    command = u''.join([
+        u'/tp',
+        u' @p[{s_east},{s_up},{s_south},{radius},c=100]',
+        u' {t_east}',
+        u' {t_up}',
+        u' {t_south}',
+    ]).format(
+        t_east=target[0],
+        t_south=target[1],
+        t_up=target[2],
+        s_east=east,
+        s_south=south,
+        s_up=wire_up,
+        radius=block_radius,
+    )
+
+    # Place the player
+    level.setPlayerPosition((east, wire_up + 2, south))
+    level.setPlayerSpawnPosition((east, wire_up, south))
+
+    # Get a world slice object
+    world_slice = LevelSlice(
+        level,
+        east=east,
+        south=south,
+        up=pad_up,
+        radius=block_radius,
+    )
+
+    world_slice.empty()
+
+    # Slab level
+    world_slice.set_blocks(
+        block_id=slab_id,
+        block_data=slab_data,
+        minimum=(pad_min_east, pad_min_south, pad_up),
+        maximum=(pad_max_east, pad_max_south, pad_up),
+    )
+
+    # Wire level with fully connected tripwire lined N and S with tripwire
+    # hooks attached to bedrock
+    world_slice.set_blocks(
+        block_id=bedrock_id,
+        minimum=(pad_min_east, pad_min_south - 2, wire_up),
+        maximum=(pad_max_east, pad_max_south + 2, wire_up),
+    )
+    world_slice.set_blocks(
+        block_id=tripwire_hook_id,
+        block_data=tripwire_hook_n_data,
+        minimum=(pad_min_east, pad_min_south - 1, wire_up),
+        maximum=(pad_max_east, pad_min_south - 1, wire_up),
+    )
+    world_slice.set_blocks(
+        block_id=tripwire_hook_id,
+        block_data=tripwire_hook_s_data,
+        minimum=(pad_min_east, pad_max_south + 1, wire_up),
+        maximum=(pad_max_east, pad_max_south + 1, wire_up),
+    )
+    world_slice.set_blocks(
+        block_id=tripwire_id,
+        block_data=tripwire_data,
+        minimum=(pad_min_east, pad_min_south, wire_up),
+        maximum=(pad_max_east, pad_max_south, wire_up),
+    )
+
+    # Just above the wire, cap the bedrock on the S and add the redstone
+    # wire and command block on the N
+    world_slice.set_blocks(
+        block_id=slab_id,
+        minimum=(pad_min_east, pad_max_south + 2, redstone_up),
+        maximum=(pad_max_east, pad_max_south + 2, redstone_up),
+    )
+    world_slice.set_blocks(
+        block_id=redstone_wire_id,
+        minimum=(pad_min_east, pad_min_south - 2, redstone_up),
+        maximum=(pad_max_east, pad_min_south - 2, cap_up),
+    )
+    world_slice.set_blocks(
+        block_id=command_block_id,
+        minimum=(east, pad_min_south - 2, redstone_up),
+        maximum=(east, pad_min_south - 2, redstone_up),
+    )
+    entity = TileEntity.Create('Control')
+    entity['Command'] = TAG_String(command)
+    entity['LastOutput'] = TAG_String(u'')
+    world_slice.add_entity(entity, (east, pad_min_south - 2, redstone_up))
+
+    # Cap redstone wire and command block with slabs
+    world_slice.set_blocks(
+        block_id=slab_id,
+        minimum=(pad_min_east, pad_min_south - 2, cap_up),
+        maximum=(pad_max_east, pad_min_south - 2, cap_up),
+    )
+
+    world_slice.save()
 
 
 def biomify(level):
