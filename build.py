@@ -170,7 +170,9 @@ def main():
 
     # nether
     print('Generating nether.')
-    create_empty_chunks(nether, radius=150)
+    nether_radius = 150
+    create_empty_chunks(nether, radius=nether_radius)
+    create_bedrock_fence(nether, radius=nether_radius)
     soul_sand_island(nether, 0, 0)
 
     # the_end
@@ -256,6 +258,15 @@ def create_empty_chunks(level, radius=0):
     for chunkX in range(-radius, radius + 1):
         for chunkZ in range(-radius, radius + 1):
             level.createChunk(chunkX, chunkZ)
+
+
+def create_bedrock_fence(level, radius=0):
+    bedrock_id = level.materials.Bedrock.ID
+    for chunkX in range(-radius, radius + 1):
+        for chunkZ in range(-radius, radius + 1):
+            if abs(chunkX) == radius or abs(chunkZ) == radius:
+                chunk = grabChunk(level, chunkX, chunkZ)
+                chunk.Blocks[:, :, :128] = bedrock_id
 
 
 def dirt_island(level, chunkX, chunkZ):
