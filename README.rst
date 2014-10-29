@@ -10,21 +10,24 @@ Prerequisites
 * Python 2.7 (available by default on many systems)
 * pip (sudo easy_install pip)
 * virtualenv (sudo pip install virtualenv)
-* virtualenvwrapper (sudo pip install virtualenvwrapper)
+* virtualenvwrapper (sudo pip install virtualenvwrapper, then additional steps
+  from http://virtualenvwrapper.readthedocs.org/en/latest/install.html)
 * -dev or -devel packages as required by the packages in requirements.txt - please submit an issue on Github if you have some of these missing so we can update this as necessary
 
 Getting Started
 ===============
 
-1. Create and switch to your virtualenv:
+1. Ensure you have met the prerequisites above.
+
+2. Create and switch to your virtualenv:
 
  $ mkvirtualenv --python=<path to python-2.7> skyblock-ce
 
-2. Get the dependencies for pymclevel:
+3. Get the dependencies for pymclevel:
 
  $ pip install -r requirements.txt
 
-3. Get pymclevel:
+4. Get pymclevel:
 
  $ pip install -r requirements2.txt
 
@@ -34,10 +37,10 @@ requirements2.txt or clone the repository and copy them locally to
 ~/.virtualenvs/skyblock-ce/lib/python-?.?/site-packages/pymclevel/ until this
 pull request is merged: https://github.com/mcedit/pymclevel/pull/180
 
-4a. Run the build script
+5a. Run the build script
 
  $ ./build.py
 
-4b. (Optional, only for distribution) Run the zip script
+5b. (Optional, only for distribution) Run the zip script
 
  $ ./zip.sh
