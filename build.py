@@ -371,6 +371,7 @@ def soul_sand_island(level, chunkX, chunkZ):
     # Portal
     portal_id = level.materials.NetherPortal.ID
     chunk.Blocks[base-1, base+1:base+3, 64:67] = portal_id
+    chunk.Data[base-1, base+1:base+3, 64:67] = 2
 
     # Chest
     contents = [
