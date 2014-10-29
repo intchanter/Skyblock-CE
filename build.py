@@ -164,7 +164,7 @@ def main():
     create_empty_chunks(overworld, radius=15)
     dirt_island(level, 0, 0)
     sand_island(level, -3, 0)
-    bedrock_island(level, 1, 0)
+    bedrock_island(level, 50, -20)
     spawn_island(level, 1000000, 1000000)
     biomify(overworld)
 
