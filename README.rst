@@ -28,6 +28,12 @@ Getting Started
 
  $ pip install -r requirements2.txt
 
+Note: pymclevel's installer doesn't currently install its required .yaml
+files. You can download them from the repository mentioned in
+requirements2.txt or clone the repository and copy them locally to
+~/.virtualenvs/skyblock-ce/lib/python-?.?/site-packages/pymclevel/ until this
+pull request is merged: https://github.com/mcedit/pymclevel/pull/180
+
 4a. Run the build script
 
  $ ./build.py
@@ -35,5 +41,3 @@ Getting Started
 4b. (Optional, only for distribution) Run the zip script
 
  $ ./zip.sh
-
-5. Realize that installing pymclevel didn't grab its required minecraft.yaml and manually download it into the library directory in the virtualenv.  Duplicate the effort for classic.yaml, indev.yaml, pocket.yaml, ...
