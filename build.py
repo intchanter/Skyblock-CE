@@ -299,16 +299,58 @@ def dirt_island(level, chunkX, chunkZ):
 
     # Chest
     contents = [
-        {'id': items.names['Ice'],
-            'count': 1, 'damage': 0},
-        {'id': items.names['Lava Bucket'],
-            'count': 1, 'damage': 0},
+        {
+            'id': items.names['Ice'],
+            'count': 1,
+            'damage': 0,
+        },
+        {
+            'id': items.names['Lava Bucket'],
+            'count': 1,
+            'damage': 0,
+        },
         signed_book(
-            'Welcome to Skyblock CE!',
-            ['Page 1',
-                'Page 2']
-            ),
-        ]
+            'Book One',
+            [
+                '''Contents:
+
+2: Credits
+3: Basic Objectives ''',  # page 1
+
+                '''Credits:
+
+- Noobcrew made the original Skyblock maps
+- Intchanter posted ideas in the Skyblock thread
+- WesyWesy suggested Intchanter update Skyblock
+- CurtJen and Gaudeon: helped test''',  # page 2
+
+                '''Basic objectives:
+
+- Farm saplings: acacia, birch, dark oak, jungle, oak, spruce
+- Farm wheat, melons, pumpkins, cactus, carrots, potatoes
+- Farm tall grass, vines, dandelions, poppies''',  # page 3
+
+                '''- Collect arrows, bones, ender pearls, glass bottles
+- Collect glowstone dust, gold nuggets, gunpowder, iron, redstone dust,
+- Collect rotten flesh, slime balls, spider eyes, string
+- Make charcoal
+- Generate cobblestone and smooth stone''',  # page 4
+
+                '''- Farm beef, chicken, eggs, feathers, ink sacs
+- Farm leather, mutton, pork chops, rabbit, rabbit hide, wool
+- Make stone tools
+- Milk a cow
+- Obtain a rabbit foot
+- Craft snow golems
+- Make leather armor
+- Make cake, pumpkin pie, slime blocks''',  # page 5
+
+                '''- Collect clown fish, fish, lily pads, a nametag
+- Collect puffer fish, a daddle, salmon
+- Collect a tripwire hook, water bottles''',  # page 6
+            ]
+        ),
+    ]
     chunkX *= 16
     chunkZ *= 16
     make_chest(level, chunk, (chunkX+base+7, chunkZ+base+2, 64), contents)
@@ -338,13 +380,6 @@ def sand_island(level, chunkX, chunkZ):
             'count': 2, 'damage': 1},
         {'id': items.names['Pumpkin Seeds'],
             'count': 1, 'damage': 0},
-        signed_book(
-            'Sand Island Objectives',
-            ["Now that you've reached the sand island, new objectives"
-                + " are possible:\n\n",
-                '',
-                ''],
-            )
     ]
     # Entities need the world-wide coordinates?!
     chunkX *= 16
@@ -383,7 +418,60 @@ def soul_sand_island(level, chunkX, chunkZ):
             'count': 2, 'damage': 2},
         {'id': items.names['Sugar Canes'],
             'count': 1, 'damage': 0},
-        ]
+        signed_book(
+            'Book Two',
+            [
+                '''Contents:
+
+2: Advanced Objectives
+4: Extreme Objectives
+6: Crazy Objectives
+7: Special Locations''',  # page 1
+
+                '''Advanced Objectives:
+
+- Collect ghast tears, gold
+- Obtain records
+- Fight or tame a wolf
+- Milk a mooshroom
+- Farm the other short flowers:
+  - red, orange, pink, white tulips
+  - oxeye daisy, azure bluet, allium, blue orchid''',  # page 2
+
+                '''- Farm brown and red mushrooms, cocoa beans, nether wart, sugar cane
+- Light off a fireworks show''',  # page 3
+
+                '''Extreme Objectives:
+
+- Collect obsidian
+- Farm iron
+- Farm two-block flowers: sunflower, peony, rose bush, lilac
+- Farm ferns
+- Brew some potions
+- Play a record
+- Enchant your own tools and armor
+- Make iron armor and tools''',  # page 4
+
+                '''- Cure some villagers
+- Obtain emeralds, glass, diamond tools, lapis lazuli, name tags,
+saddles, enchanted tools, and armor from villagers
+- Collect blaze rods, coal, and wither skeleton heads''',  # page 5
+
+                '''Crazy Objectives:
+
+- Obtain a head from something that isn't a wither skeleton
+- Build and kill a wither
+- Build a beacon''',  # page 6
+
+                '''Special locations:
+
+Nether fortress: -85x,-78z
+
+End portal: 800x,-160z
+''',  # page 7
+            ],
+        )
+    ]
     chunkX *= 16
     chunkZ *= 16
     make_chest(level, chunk, (chunkX+base+3, chunkZ+base+3, 64), contents)
@@ -469,14 +557,12 @@ def obsidian_island(level, chunkX, chunkZ):
     chunk2.Blocks[base-1:base+2, base-5:, 45:48] = air_id
 
     contents = [
-        {'id': items.names['Diamond'],
-            'count': 3, 'damage': 0},
-        signed_book(
-            'Credits',
-            ["",
-                ''],
-            )
-        ]
+        {
+            'id': items.names['Diamond'],
+            'count': 3,
+            'damage': 0
+        },
+    ]
     chunkX *= 16
     chunkZ *= 16
     make_chest(level, chunk, (chunkX+base, chunkZ+base-4, 45), contents)
