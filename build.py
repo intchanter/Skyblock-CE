@@ -147,7 +147,7 @@ def main():
     level = MCInfdevOldLevel(settings.output_filename,
                              create=True,
                              random_seed=1)
-    overworld = level.getDimension(0)
+    overworld = level
     # Superflat: version 2, one layer of air, deep ocean biome
     overworld.root_tag['Data']['generatorName'] = TAG_String(u'flat')
     overworld.root_tag['Data']['generatorOptions'] = TAG_String(u'2;0;24;')
@@ -162,10 +162,10 @@ def main():
     # overworld
     print('Generating overworld.')
     create_empty_chunks(overworld, radius=15)
-    dirt_island(level, 0, 0)
-    sand_island(level, -3, 0)
-    bedrock_island(level, 50, -20)
-    spawn_island(level, 1000000, 1000000)
+    dirt_island(overworld, 0, 0)
+    sand_island(overworld, -3, 0)
+    bedrock_island(overworld, 50, -20)
+    spawn_island(overworld, 1000000, 1000000)
     biomify(overworld)
 
     # nether
