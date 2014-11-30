@@ -465,7 +465,7 @@ saddles, enchanted tools, and armor from villagers
 
                 '''Special locations:
 
-Nether fortress: -85x,-78z
+Nether fortress: -16x,-16z
 
 End portal: 800x,-160z
 ''',  # page 7
