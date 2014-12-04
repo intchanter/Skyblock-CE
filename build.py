@@ -346,7 +346,7 @@ def dirt_island(level, chunkX, chunkZ):
 - Make cake, pumpkin pie, slime blocks''',  # page 5
 
                 '''- Collect clown fish, fish, lily pads, a nametag
-- Collect puffer fish, a daddle, salmon
+- Collect puffer fish, a saddle, salmon
 - Collect a tripwire hook, water bottles''',  # page 6
             ]
         ),
