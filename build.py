@@ -461,7 +461,9 @@ saddles, enchanted tools, and armor from villagers
 
 - Obtain a head from something that isn't a wither skeleton
 - Build and kill a wither
-- Build a beacon''',  # page 6
+- Build a beacon
+- Collect lava, gravel, netherrack
+- Craft an arrow''',  # page 6
 
                 '''Special locations:
 
