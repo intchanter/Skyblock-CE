@@ -170,7 +170,7 @@ def main():
 
     # nether
     print('Generating nether.')
-    nether_radius = 150
+    nether_radius = 64  # 1 km to mainland
     create_empty_chunks(nether, radius=nether_radius)
     create_bedrock_fence(nether, radius=nether_radius)
     soul_sand_island(nether, 0, 0)
